@@ -1,0 +1,37 @@
+#!/bin/bash
+
+if ! command -v python &> /dev/null || ! command -v python3 &> /dev/null
+then
+    echo "Python3 must be installed! We recommend using virtualenv."
+    exit
+fi
+
+if ! command -v gdown &> /dev/null
+then 
+    echo "gdown must be installed. Install with"
+    echo ""
+    echo "     pip3 install gdown"
+    echo ""
+    exit 
+fi
+
+if ! command -v git-lfs &> /dev/null
+then 
+    echo "git-lfs must be installed!"
+    exit 
+fi
+
+# Download the model
+gdown https://drive.google.com/u/0/uc?id=1A-mNagdLzOW3MSa07acTLWFXRZLwDQpp&export=download
+
+pip3 install -r requirements.txt
+
+git clone https://huggingface.co/microsoft/codebert-base codebert
+
+echo ""
+echo ""
+echo "Finished! Use the command"
+echo ""
+echo "       python3 app.py"
+echo "" 
+echo "to deploy the website"

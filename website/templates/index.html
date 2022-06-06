@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+        <title>Thesis Prototype</title>
+
+        <script type="text/javascript">
+
+            
+
+            function handle_error(error_msg, color) {
+                let error_panel = document.getElementById('warning')
+
+                error_panel.innerHTML = error_msg
+                error_panel.style.color = color
+            }
+
+            function submit_form() {
+                let text_content = document.getElementById('user_input_area').value
+                let languages = document.getElementsByName('input_lang')
+                let hidden_form = document.getElementById('submit_form')
+                 
+                let checked_language = null
+
+                for (let language of languages) {
+                    if (language.checked) {
+                        checked_language = language.value
+                    }
+                }
+
+                if (checked_language == null) {
+                    handle_error('ERROR: Please select an input language', '#FF0000')
+
+                } else {
+                    // Paste these values to the hidden form.
+                    document.getElementById('code_hidden').value = text_content
+                    document.getElementById('language_hidden').value = checked_language
+                    hidden_form.submit()
+                }
+                
+            }
+        </script>
+    </head>
+    <body>
+        <h1>Algorithm Classifier Proof of Concept</h1>
+
+        <div class="user_input">
+            
+            {% if not data['code'] %}
+            <textarea id="user_input_area">
+def search(arr, k):
+    for (idx, e) in enumerate(arr):
+        if k == e:
+            return idx
+    return -1
+            {% else %}
+            <textarea id="user_input_area">
+{{data['code']}} 
+            {%  endif %}
+            </textarea>
+        </div>
+        <div class="options_and_output">
+            <div class="language_selector">
+                <p id="subtitle2">
+                    Choose language:
+                </p>
+                <input type="radio" id="java" name="input_lang" value="java"
+                    {% if data['lang'] == 'java' %}
+                        checked 
+                    {% endif %}
+                >
+                <label for="java">Java</label><br>
+                <input type="radio" id="python" name="input_lang" value="python"
+                    {% if data['lang'] == 'python' %}
+                        checked 
+                    {% endif %}
+                >
+                <label for="python">Python</label><br>
+                <input type="radio" id="javascript" name="input_lang" value="js"
+                    {% if data['lang'] == 'js' %}
+                        checked 
+                    {% endif %}
+                >
+                <label for="javascript">JavaScript</label><br>
+            </div>
+            <button id="submit_btn" onclick="submit_form()">Submit</button>
+
+            <div class="predictions">
+                <table>
+                    <tr>
+                        <th>
+                            Algorithm
+                        </th>
+                        <th>
+                            Confidence
+                        </th>
+                    </tr>
+                    {% for label, probability in data['probabilities'] %}
+
+                    <tr>
+                        <td>
+                            <span class="prediction
+                            {% if label in data['results'] %}
+                                predicted
+                            {% endif %}">
+                                {{label}}
+                            </span>
+                        </td>
+                        <td>
+                            {{probability}}
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+                </table>
+            </div>
+            <div>
+                <p id="warning"></p>
+                <!-- <p>
+
+                    {{data}}
+
+                </p> -->
+            </div>
+            <p align="center">
+                Thesis Proof of Concept by John Kenneth Lesaba, Gerd Lowell Jana, Karl Frederick Roldan<br>
+                Thesis advisor: Joshua Martinez
+            </p>
+        </div>
+
+        <div class="hidden_form">
+            <form method="POST" action="/" id="submit_form" enctype="multipart/form-data" hidden>
+                <textarea id="code_hidden" name="code"></textarea>
+                <input type="text" id="language_hidden" name="lang">
+            </form>
+        </div>
+    </body>
+</html>
